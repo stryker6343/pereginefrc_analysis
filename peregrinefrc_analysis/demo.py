@@ -17,6 +17,8 @@ print(f"Username: {username}")
 payload = {"username": username, "password": password}
 r = requests.post(BASE_URL + "authenticate", json=payload)
 if r.status_code != 200:
+    print(r.status_code)
+    print(r.text)
     sys.exit(1)
 access_token = r.json()["accessToken"]
 refresh_token = r.json()["refreshToken"]

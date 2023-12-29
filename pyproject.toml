@@ -1,0 +1,12 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "peregrinefrc-analysis"
+dynamic = ["version", "dependencies"]
+readme = "README.md"
+license = {file = "LICENSE"}
+
+[tool.hatch.version]
+path = "peregrinefrc_analysis\\__init__.py"

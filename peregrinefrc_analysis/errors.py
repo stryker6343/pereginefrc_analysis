@@ -1,4 +1,6 @@
 class AuthError(Exception):
     def __init__(self, response):
-        message = f"Authentication Error: {response.text} Code {response.status_code}"
+        message = (
+            f"Authentication Error [Status {response.status_code}]: {response.text}"
+        )
         super().__init__(message)
