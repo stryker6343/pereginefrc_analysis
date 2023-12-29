@@ -36,7 +36,7 @@ r = requests.get(BASE_URL + "events", headers=security_header, params=payload)
 for event in r.json():
     print(f"{event['key']:10} {event['name']}")
 
-event = "2023zzzzz"
+event = "2023orwil"
 r = requests.get(BASE_URL + f"events/{event}/matches", headers=security_header)
 print(r.status_code)
 pprint(r.json())

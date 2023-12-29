@@ -25,7 +25,8 @@ class PeregrineClient:
     def _get_years(self) -> list[int]:
         headers = {"Authorization": "Bearer " + self._access_token}
         response = requests.get(self._base_url + "years", headers=headers)
-        # TODO: Add error handling code
+        if response.status_code != 200:
+            raise IOError(f"[Status {response.status_code}]: {response.text}")
         return response.json()
 
     @property
