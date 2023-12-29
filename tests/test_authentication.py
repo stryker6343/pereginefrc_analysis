@@ -1,4 +1,4 @@
-from peregrinefrc_analysis.errors import AuthError
+from peregrinefrc_analysis.errors import AuthenticationError
 from os import getenv
 import pytest
 from fixtures import unauthenticated_client
@@ -14,7 +14,7 @@ from fixtures import unauthenticated_client
 )
 def test_authentication_blank_fields(unauthenticated_client, username, password):
     """This test checks for reporting of blank fields"""
-    with pytest.raises(AuthError) as excinfo:
+    with pytest.raises(AuthenticationError) as excinfo:
         unauthenticated_client.authenticate(username=username, password=password)
     error_message = str(excinfo.value)
     assert error_message.startswith("Authentication Error [Status 422]:")
@@ -36,7 +36,7 @@ def test_authentication_blank_fields(unauthenticated_client, username, password)
 
 def test_authentication_unauthorized(unauthenticated_client):
     """This test checks for handling of invalid username and password"""
-    with pytest.raises(AuthError) as excinfo:
+    with pytest.raises(AuthenticationError) as excinfo:
         unauthenticated_client.authenticate(
             username="dummy", password="invalidpassword"
         )

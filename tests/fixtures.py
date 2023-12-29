@@ -4,6 +4,7 @@ import pytest
 
 
 VALID_EVENT = "2023orwil"
+INVALID_EVENT = "2023zzzzz"
 
 
 @pytest.fixture(scope="module")
@@ -24,4 +25,4 @@ def authenticated_client():
 
 @pytest.fixture(scope="module")
 def reports_data(authenticated_client):
-    return authenticated_client.reports(VALID_EVENT)
+    return authenticated_client.event_reports(VALID_EVENT)
