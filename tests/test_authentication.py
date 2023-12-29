@@ -1,13 +1,7 @@
-from peregrinefrc_analysis.peregrine_client import PeregrineClient
 from peregrinefrc_analysis.errors import AuthError
 from os import getenv
 import pytest
-
-
-@pytest.fixture(scope="module")
-def unauthenticated_client():
-    """This client does not have an access token assigned"""
-    return PeregrineClient()
+from fixtures import unauthenticated_client
 
 
 @pytest.mark.parametrize(

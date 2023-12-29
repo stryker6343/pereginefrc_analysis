@@ -1,4 +1,5 @@
 import sys
+from pprint import pprint
 
 import requests
 from os import getenv
@@ -34,3 +35,13 @@ payload = {"year": 2023}
 r = requests.get(BASE_URL + "events", headers=security_header, params=payload)
 for event in r.json():
     print(f"{event['key']:10} {event['name']}")
+
+event = "2023orwil"
+r = requests.get(BASE_URL + f"events/{event}/matches", headers=security_header)
+print(r.status_code)
+pprint(r.json())
+
+payload = {"event": event}
+r = requests.get(BASE_URL + "reports", params=payload, headers=security_header)
+print(r.status_code)
+pprint(r.json())
