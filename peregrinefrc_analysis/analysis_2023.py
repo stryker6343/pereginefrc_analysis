@@ -7,8 +7,8 @@ from collections import defaultdict
 
 def count_total_game_pieces_scored(
     match_report: dict,
-    max_value: int = None,
-    user_ids: list = None,
+    max_value: int | None = None,
+    user_ids: list | None = None,
 ) -> Count:
     """Count the number of games pieces scored in the match report"""
     team_number = TeamNumber(match_report["teamKey"])
