@@ -1,8 +1,9 @@
-from .peregrine_client import PeregrineClient
-from .analysis import TeamNumber
-from .analysis import Count
-from pandas import DataFrame
 from collections import defaultdict
+
+from pandas import DataFrame
+
+from .analysis import Count, TeamNumber
+from .peregrine_client import PeregrineClient
 
 
 def count_total_game_pieces_scored(

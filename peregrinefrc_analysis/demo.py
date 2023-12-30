@@ -1,8 +1,8 @@
 import sys
+from os import getenv
 from pprint import pprint
 
 import requests
-from os import getenv
 
 BASE_URL = "https://api.peregrinefrc.com/"
 

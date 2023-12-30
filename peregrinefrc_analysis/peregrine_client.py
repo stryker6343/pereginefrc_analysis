@@ -1,6 +1,6 @@
-from .errors import AuthenticationError
-from .errors import MissingAccessTokenError
 import requests
+
+from .errors import AuthenticationError, MissingAccessTokenError
 
 DEFAULT_URL = "https://api.peregrinefrc.com/"
 
