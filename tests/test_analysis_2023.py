@@ -1,5 +1,6 @@
 import pytest
-from fixtures import INVALID_EVENT, VALID_EVENT, authenticated_client
+from fixtures import (INVALID_EVENT, VALID_EVENT, VALID_EVENT_SHAPE,
+                      authenticated_client)
 from pandas import DataFrame
 
 from peregrinefrc_analysis.analysis import Count
@@ -7,10 +8,16 @@ from peregrinefrc_analysis.analysis_2023 import (
     count_total_game_pieces_scored, make_team_dataframe)
 
 
-def test_make_team_dataframe(authenticated_client):
+def test_make_team_dataframe_type(authenticated_client):
     """Verify it returns a dataframe"""
     team_dataframe = make_team_dataframe(authenticated_client, VALID_EVENT)
     assert isinstance(team_dataframe, DataFrame)
+
+
+def test_make_team_dataframe_shape(authenticated_client):
+    """Verify it returns a dataframe"""
+    team_dataframe = make_team_dataframe(authenticated_client, VALID_EVENT)
+    assert team_dataframe.shape == VALID_EVENT_SHAPE
 
 
 def test_make_team_dataframe_with_invalid_event(authenticated_client):

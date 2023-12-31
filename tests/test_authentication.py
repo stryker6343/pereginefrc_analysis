@@ -1,7 +1,9 @@
-from peregrinefrc_analysis.errors import AuthenticationError
 from os import getenv
+
 import pytest
 from fixtures import unauthenticated_client
+
+from peregrinefrc_analysis.errors import AuthenticationError
 
 
 @pytest.mark.parametrize(
@@ -10,6 +12,7 @@ from fixtures import unauthenticated_client
         ("", ""),
         ("dummy", ""),
         ("", "invalidpassword"),
+        (None, None),
     ],
 )
 def test_authentication_blank_fields(unauthenticated_client, username, password):
@@ -18,14 +21,14 @@ def test_authentication_blank_fields(unauthenticated_client, username, password)
         unauthenticated_client.authenticate(username=username, password=password)
     error_message = str(excinfo.value)
     assert error_message.startswith("Authentication Error [Status 422]:")
-    if len(username) == 0:
+    if not username or len(username) == 0:
         assert (
             error_message.find(
                 "Field validation for 'Username' failed on the 'gte' tag"
             )
             > 0
         )
-    if len(password) == 0:
+    if not password or len(password) == 0:
         assert (
             error_message.find(
                 "Field validation for 'Password' failed on the 'gte' tag"

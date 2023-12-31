@@ -19,6 +19,15 @@ class TeamNumber:
     def string(self) -> str:
         return self._team_id
 
+    def __hash__(self):
+        return hash(self._team_id)
+
+    def __eq__(self, other):
+        return self._team_id == other._team_id
+
+    def __ne__(self, other):
+        return not (self == other)
+
 
 class Count(NamedTuple):
     team: TeamNumber

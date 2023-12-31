@@ -12,7 +12,9 @@ class PeregrineClient:
         self._refresh_token = None
         self._years = None
 
-    def authenticate(self, username: str, password: str) -> None:
+    def authenticate(self, username: str | None, password: str | None) -> None:
+        username = username if username else ""
+        password = password if password else ""
         payload = {"username": username, "password": password}
         response = requests.post(self._base_url + "authenticate", json=payload)
         if response.status_code != 200:
