@@ -10,12 +10,15 @@ def is_valid_report(
     report: dict,
     excluded_realms: list[int] | None,
     excluded_reporters: list[int] | None,
+    excluded_reports: list[int] | None,
 ) -> bool:
     """Tests if the report is valid"""
     result = True
     if excluded_realms and report["realmId"] in excluded_realms:
         result = False
     if excluded_reporters and report["reporterId"] in excluded_reporters:
+        result = False
+    if excluded_reports and report["id"] in excluded_reports:
         result = False
     return result
 
@@ -33,11 +36,14 @@ def count_total_game_pieces_scored(
     max_value: int | None = None,
     excluded_realms: list | None = None,
     excluded_reporters: list | None = None,
+    excluded_reports: list | None = None,
 ) -> Count:
     """Count the number of games pieces scored in the match report"""
     team_number = TeamNumber(match_report["teamKey"])
     total = 0
-    valid = is_valid_report(match_report, excluded_realms, excluded_reporters)
+    valid = is_valid_report(
+        match_report, excluded_realms, excluded_reporters, excluded_reports
+    )
     for data in match_report["data"]:
         if "Cubes" in data["name"] or "Cones" in data["name"]:
             if is_valid_value(data["value"], max_value):
@@ -45,14 +51,18 @@ def count_total_game_pieces_scored(
     return Count(team_number, total, valid)
 
 
-def make_team_dataframe(client: PeregrineClient, event: str):
+def make_team_dataframe(
+    client: PeregrineClient, event: str, excluded_reports: list | None = None
+) -> DataFrame:
     """Creates a DataFrame with the stats from the given event"""
     reports = client.event_reports(event=event)
 
     # Determine the number of game pieces each team scored in each match
     total_game_pieces_scored = defaultdict(list)
     for report in reports:
-        team_number, value, valid_entry = count_total_game_pieces_scored(report)
+        team_number, value, valid_entry = count_total_game_pieces_scored(
+            report, excluded_reports=excluded_reports
+        )
         if valid_entry:
             total_game_pieces_scored[team_number].append(value)
 

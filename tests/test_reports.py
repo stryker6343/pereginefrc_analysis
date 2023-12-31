@@ -1,12 +1,8 @@
-from peregrinefrc_analysis.errors import MissingAccessTokenError
-
 import pytest
+from fixtures import (INVALID_EVENT, VALID_EVENT, authenticated_client,
+                      reports_data, unauthenticated_client)
 
-from fixtures import authenticated_client
-from fixtures import unauthenticated_client
-from fixtures import reports_data
-from fixtures import INVALID_EVENT
-from fixtures import VALID_EVENT
+from peregrinefrc_analysis.errors import MissingAccessTokenError
 
 
 def test_event_reports_is_a_list(authenticated_client, reports_data):

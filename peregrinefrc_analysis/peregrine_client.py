@@ -8,13 +8,13 @@ DEFAULT_URL = "https://api.peregrinefrc.com/"
 class PeregrineClient:
     def __init__(self, url: str = DEFAULT_URL):
         self._base_url = url
-        self._access_token = None
-        self._refresh_token = None
-        self._years = None
+        self._access_token = ""
+        self._refresh_token = ""
+        self._years: list[int] = []
 
-    def authenticate(self, username: str | None, password: str | None) -> None:
-        username = username if username else ""
-        password = password if password else ""
+    def authenticate(self, username: str = "", password: str = "") -> None:
+        # username = username if username else ""
+        # password = password if password else ""
         payload = {"username": username, "password": password}
         response = requests.post(self._base_url + "authenticate", json=payload)
         if response.status_code != 200:

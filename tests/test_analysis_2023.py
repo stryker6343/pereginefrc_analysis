@@ -1,11 +1,12 @@
 import pytest
-from fixtures import (INVALID_EVENT, VALID_EVENT, VALID_EVENT_SHAPE,
-                      authenticated_client)
+from fixtures import INVALID_EVENT, VALID_EVENT, VALID_EVENT_SHAPE, authenticated_client
 from pandas import DataFrame
 
 from peregrinefrc_analysis.analysis import Count
 from peregrinefrc_analysis.analysis_2023 import (
-    count_total_game_pieces_scored, make_team_dataframe)
+    count_total_game_pieces_scored,
+    make_team_dataframe,
+)
 
 
 def test_make_team_dataframe_type(authenticated_client):
@@ -100,7 +101,7 @@ TEST_REPORTS = [
             {"name": "Robot Died", "value": 0},
         ],
         "eventKey": "2023orwil",
-        "id": 9546,
+        "id": 9547,
         "matchKey": "qm2",
         "realmId": 13,
         "reporterId": 424,
@@ -109,11 +110,14 @@ TEST_REPORTS = [
 ]
 EXCLUDED_REALMS = [13]
 EXCLUDED_REPORTERS = [421]
+EXCLUDED_REPORTS = [9546]
+
 EXPECTED_VALUES = [30, 17, 17]
 EXPECTED_VALUES_LESS_THAN_FIVE = [20, 12, 12]
 EXPECTED_TEAMS = [4450, 1234, 1234]
 EXPECTED_VALID_REALMS = [True, True, False]
 EXPECTED_VALID_REPORTERS = [False, True, True]
+EXPECTED_VALID_REPORTS = [True, False, True]
 
 
 @pytest.mark.parametrize("index", list(range(len(TEST_REPORTS))))
@@ -167,4 +171,14 @@ def test_count_total_game_pieces_scored_valid_reporter(index):
             TEST_REPORTS[index], excluded_reporters=EXCLUDED_REPORTERS
         ).valid
         == EXPECTED_VALID_REPORTERS[index]
+    )
+
+
+@pytest.mark.parametrize("index", list(range(len(TEST_REPORTS))))
+def test_count_total_game_pieces_scored_valid_match(index):
+    assert (
+        count_total_game_pieces_scored(
+            TEST_REPORTS[index], excluded_reports=EXCLUDED_REPORTS
+        ).valid
+        == EXPECTED_VALID_REPORTS[index]
     )
