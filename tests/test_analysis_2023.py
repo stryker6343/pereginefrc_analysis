@@ -1,5 +1,5 @@
 import pytest
-from fixtures import VALID_EVENT, authenticated_client
+from fixtures import INVALID_EVENT, VALID_EVENT, authenticated_client
 from pandas import DataFrame
 
 from peregrinefrc_analysis.analysis import Count
@@ -11,6 +11,16 @@ def test_make_team_dataframe(authenticated_client):
     """Verify it returns a dataframe"""
     team_dataframe = make_team_dataframe(authenticated_client, VALID_EVENT)
     assert isinstance(team_dataframe, DataFrame)
+
+
+def test_make_team_dataframe_with_invalid_event(authenticated_client):
+    """Verify that creating a DataFrame with an invalid event raises an error"""
+    with pytest.raises(ValueError) as excinfo:
+        make_team_dataframe(authenticated_client, INVALID_EVENT)
+        assert (
+            str(excinfo.value)
+            == f"ValueError: Event code '{INVALID_EVENT}' returned no event reports"
+        )
 
 
 TEST_REPORTS = [
