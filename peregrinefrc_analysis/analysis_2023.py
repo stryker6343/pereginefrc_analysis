@@ -11,6 +11,7 @@ def is_valid_report(
     excluded_realms: list[int] | None,
     excluded_reporters: list[int] | None,
 ) -> bool:
+    """Tests if the report is valid"""
     result = True
     if excluded_realms and report["realmId"] in excluded_realms:
         result = False
@@ -20,6 +21,7 @@ def is_valid_report(
 
 
 def is_valid_value(value: int, max_value: int | None) -> bool:
+    """Tests if the value is not greater than an optional max value"""
     result = True
     if max_value and value > max_value:
         result = False
@@ -44,6 +46,7 @@ def count_total_game_pieces_scored(
 
 
 def make_team_dataframe(client: PeregrineClient, event: str):
+    """Creates a DataFrame with the stats from the given event"""
     reports = client.event_reports(event=event)
 
     # Determine the number of game pieces each team scored in each match

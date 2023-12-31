@@ -1,10 +1,10 @@
-from fixtures import authenticated_client
-from peregrinefrc_analysis.analysis_2023 import make_team_dataframe
-from peregrinefrc_analysis.analysis_2023 import count_total_game_pieces_scored
-from peregrinefrc_analysis.analysis import Count
-from pandas import DataFrame
-from fixtures import VALID_EVENT
 import pytest
+from fixtures import VALID_EVENT, authenticated_client
+from pandas import DataFrame
+
+from peregrinefrc_analysis.analysis import Count
+from peregrinefrc_analysis.analysis_2023 import (
+    count_total_game_pieces_scored, make_team_dataframe)
 
 
 def test_make_team_dataframe(authenticated_client):
