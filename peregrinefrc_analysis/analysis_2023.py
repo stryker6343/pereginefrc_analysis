@@ -2,7 +2,7 @@ from collections import defaultdict
 
 from pandas import DataFrame
 
-from .analysis import Count, TeamNumber
+from .analysis import Count, CountStats, TeamNumber, get_count_stats
 from .peregrine_client import PeregrineClient
 
 
@@ -57,13 +57,8 @@ def make_team_dataframe(client: PeregrineClient, event: str):
     data = []
     teams = []
     for team in total_game_pieces_scored:
-        maximum = max(total_game_pieces_scored[team])
-        average = sum(total_game_pieces_scored[team]) / len(
-            total_game_pieces_scored[team]
-        )
-        filtered_count = [i for i in total_game_pieces_scored[team] if i != 0]
-        minimum = min(filtered_count, default=0)
         teams.append(team.number)
-        data.append((minimum, average, maximum))
+        stats = get_count_stats(total_game_pieces_scored[team])
+        data.append((stats.minimum_other_than_zero, stats.average, stats.maximum))
 
     return DataFrame(data, columns=["Minimum", "Average", "Maximum"], index=teams)

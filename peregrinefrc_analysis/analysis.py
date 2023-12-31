@@ -24,3 +24,26 @@ class Count(NamedTuple):
     team: TeamNumber
     value: float
     valid: bool
+
+
+class CountStats(NamedTuple):
+    quantity: float
+    average: float
+    maximum: float
+    minimum: float
+    minimum_other_than_zero: float
+
+
+def get_count_stats(values: list[float]) -> CountStats:
+    non_zero = [i for i in values if i != 0]
+    if len(non_zero) == 0:
+        non_zero = [
+            0,
+        ]
+    return CountStats(
+        quantity=len(values),
+        average=sum(values) / len(values),
+        maximum=max(values),
+        minimum=min(values),
+        minimum_other_than_zero=min(non_zero),
+    )

@@ -1,7 +1,7 @@
 import pytest
 
 from peregrinefrc_analysis.analysis import TeamNumber
-from peregrinefrc_analysis.analysis import Count
+from peregrinefrc_analysis.analysis import Count, CountStats, get_count_stats
 
 
 def test_analysis_team_number_type():
@@ -24,3 +24,24 @@ def test_analysis_team_number_bad_numeric(bad):
 
 def test_analysis_count_type():
     assert isinstance(Count(team=TeamNumber("frc1234"), value=0, valid=True), Count)
+
+
+def test_get_count_stats_type():
+    assert isinstance(get_count_stats([0, 1, 2, 3]), CountStats)
+
+
+@pytest.mark.parametrize(
+    "value,exp_qty,exp_min,exp_max,exp_ave,exp_min_otz",
+    [
+        ([0, 1, 2, 3], 4, 0, 3, 1.5, 1),
+        ([0, 0, 0, 3], 4, 0, 3, 0.75, 3),
+        ([0], 1, 0, 0, 0, 0),
+    ],
+)
+def test_get_count_stats_values(value, exp_qty, exp_min, exp_max, exp_ave, exp_min_otz):
+    result = get_count_stats(value)
+    assert result.quantity == exp_qty
+    assert result.minimum == exp_min
+    assert result.maximum == exp_max
+    assert result.average == exp_ave
+    assert result.minimum_other_than_zero == exp_min_otz
