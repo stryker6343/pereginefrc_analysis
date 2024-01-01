@@ -1,6 +1,6 @@
 from collections import defaultdict
 from collections.abc import Callable
-from typing import NamedTuple, Sequence
+from typing import Any, NamedTuple, Sequence
 
 from pandas import DataFrame
 
@@ -67,6 +67,7 @@ def is_valid_report(
 
 
 def get_count_stats(values: list[float]) -> CountStats:
+    """Returns a CountStats object using the provided list of metric values"""
     non_zero = [i for i in values if i != 0]
     if len(non_zero) == 0:
         non_zero = [
@@ -81,12 +82,13 @@ def get_count_stats(values: list[float]) -> CountStats:
     )
 
 
-def count(
+def count_metric(
     match_report: dict,
     match_fcn: Callable[[dict], bool],
     excluded_reports: list | None = None,
 ) -> Count:
-    """Return a count of the report data using the specified filter"""
+    """Return a count of the specified metric using the report data and the
+    provided counting function"""
     team_number = TeamNumber(match_report["teamKey"])
     total = 0
     valid = is_valid_report(match_report, excluded_reports=excluded_reports)
@@ -107,10 +109,10 @@ def make_team_dataframe(
     reports = client.event_reports(event=event)
 
     # Determine the number of game pieces each team scored in each match
-    counts = defaultdict(list)
+    counts: defaultdict[Any, list] = defaultdict(list)
     for i, fcn in enumerate(count_functions):
         for report in reports:
-            team_number, value, valid_entry = count(
+            team_number, value, valid_entry = count_metric(
                 report, fcn, excluded_reports=excluded_reports
             )
             if len(counts[team_number]) == i:
