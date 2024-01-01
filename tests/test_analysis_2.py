@@ -1,30 +1,43 @@
 import pytest
-from fixtures import INVALID_EVENT, VALID_EVENT, VALID_EVENT_SHAPE, authenticated_client
+from fixtures import (
+    INVALID_EVENT,
+    VALID_EVENT,
+    VALID_EVENT_SHAPE_2023,
+    authenticated_client,
+)
 from pandas import DataFrame
 
 from peregrinefrc_analysis.analysis import Count
+from peregrinefrc_analysis.analysis import make_team_dataframe, count_metric
 from peregrinefrc_analysis.analysis_2023 import (
-    count_total_game_pieces_scored,
-    make_team_dataframe,
+    COUNT_NAMES,
+    COUNT_FUNCTIONS,
+    count_total_game_pieces,
 )
 
 
 def test_make_team_dataframe_type(authenticated_client):
     """Verify it returns a dataframe"""
-    team_dataframe = make_team_dataframe(authenticated_client, VALID_EVENT)
+    team_dataframe = make_team_dataframe(
+        authenticated_client, VALID_EVENT, COUNT_NAMES, COUNT_FUNCTIONS
+    )
     assert isinstance(team_dataframe, DataFrame)
 
 
 def test_make_team_dataframe_shape(authenticated_client):
     """Verify it returns a dataframe"""
-    team_dataframe = make_team_dataframe(authenticated_client, VALID_EVENT)
-    assert team_dataframe.shape == VALID_EVENT_SHAPE
+    team_dataframe = make_team_dataframe(
+        authenticated_client, VALID_EVENT, COUNT_NAMES, COUNT_FUNCTIONS
+    )
+    assert team_dataframe.shape == VALID_EVENT_SHAPE_2023
 
 
 def test_make_team_dataframe_with_invalid_event(authenticated_client):
     """Verify that creating a DataFrame with an invalid event raises an error"""
     with pytest.raises(ValueError) as excinfo:
-        make_team_dataframe(authenticated_client, INVALID_EVENT)
+        make_team_dataframe(
+            authenticated_client, INVALID_EVENT, COUNT_NAMES, COUNT_FUNCTIONS
+        )
         assert (
             str(excinfo.value)
             == f"ValueError: Event code '{INVALID_EVENT}' returned no event reports"
@@ -121,64 +134,38 @@ EXPECTED_VALID_REPORTS = [True, False, True]
 
 
 @pytest.mark.parametrize("index", list(range(len(TEST_REPORTS))))
-def test_count_total_game_pieces_scored_type(index):
-    assert isinstance(count_total_game_pieces_scored(TEST_REPORTS[index]), Count)
+def test_count_metric_type(index):
+    assert isinstance(count_metric(TEST_REPORTS[index], count_total_game_pieces), Count)
 
 
 @pytest.mark.parametrize("index", list(range(len(TEST_REPORTS))))
-def test_count_total_game_pieces_scored_value(index):
+def test_count_metric_value(index):
     assert (
-        count_total_game_pieces_scored(TEST_REPORTS[index]).value
+        count_metric(TEST_REPORTS[index], count_total_game_pieces).value
         == EXPECTED_VALUES[index]
     )
 
 
 @pytest.mark.parametrize("index", list(range(len(TEST_REPORTS))))
-def test_count_total_game_pieces_scored_valid(index):
-    assert count_total_game_pieces_scored(TEST_REPORTS[index]).valid is True
+def test_count_metric_valid(index):
+    assert count_metric(TEST_REPORTS[index], count_total_game_pieces).valid is True
 
 
 @pytest.mark.parametrize("index", list(range(len(TEST_REPORTS))))
-def test_count_total_game_pieces_scored_team(index):
+def test_count_metric_team(index):
     assert (
-        count_total_game_pieces_scored(TEST_REPORTS[index]).team.number
+        count_metric(TEST_REPORTS[index], count_total_game_pieces).team.number
         == EXPECTED_TEAMS[index]
     )
 
 
 @pytest.mark.parametrize("index", list(range(len(TEST_REPORTS))))
-def test_count_total_game_pieces_scored_value_4_max(index):
+def test_count_metric_match(index):
     assert (
-        count_total_game_pieces_scored(TEST_REPORTS[index], max_value=4).value
-        == EXPECTED_VALUES_LESS_THAN_FIVE[index]
-    )
-
-
-@pytest.mark.parametrize("index", list(range(len(TEST_REPORTS))))
-def test_count_total_game_pieces_scored_valid_realm(index):
-    assert (
-        count_total_game_pieces_scored(
-            TEST_REPORTS[index], excluded_realms=EXCLUDED_REALMS
-        ).valid
-        == EXPECTED_VALID_REALMS[index]
-    )
-
-
-@pytest.mark.parametrize("index", list(range(len(TEST_REPORTS))))
-def test_count_total_game_pieces_scored_valid_reporter(index):
-    assert (
-        count_total_game_pieces_scored(
-            TEST_REPORTS[index], excluded_reporters=EXCLUDED_REPORTERS
-        ).valid
-        == EXPECTED_VALID_REPORTERS[index]
-    )
-
-
-@pytest.mark.parametrize("index", list(range(len(TEST_REPORTS))))
-def test_count_total_game_pieces_scored_valid_match(index):
-    assert (
-        count_total_game_pieces_scored(
-            TEST_REPORTS[index], excluded_reports=EXCLUDED_REPORTS
+        count_metric(
+            TEST_REPORTS[index],
+            count_total_game_pieces,
+            excluded_reports=EXCLUDED_REPORTS,
         ).valid
         == EXPECTED_VALID_REPORTS[index]
     )

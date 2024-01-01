@@ -5,7 +5,7 @@ import pytest
 from peregrinefrc_analysis.peregrine_client import PeregrineClient
 
 VALID_EVENT = "2023orwil"
-VALID_EVENT_SHAPE = (28, 3)
+VALID_EVENT_SHAPE_2023 = (28, 9)
 INVALID_EVENT = "2023zzzzz"
 
 
