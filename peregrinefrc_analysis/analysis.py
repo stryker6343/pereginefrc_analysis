@@ -1,4 +1,10 @@
-from typing import NamedTuple
+from collections import defaultdict
+from collections.abc import Callable
+from typing import NamedTuple, Sequence
+
+from pandas import DataFrame
+
+from .peregrine_client import PeregrineClient
 
 
 class TeamNumber:
@@ -43,6 +49,23 @@ class CountStats(NamedTuple):
     minimum_other_than_zero: float
 
 
+def is_valid_report(
+    report: dict,
+    excluded_realms: list[int] | None = None,
+    excluded_reporters: list[int] | None = None,
+    excluded_reports: list[int] | None = None,
+) -> bool:
+    """Tests if the report is valid"""
+    result = True
+    if excluded_realms and report["realmId"] in excluded_realms:
+        result = False
+    if excluded_reporters and report["reporterId"] in excluded_reporters:
+        result = False
+    if excluded_reports and report["id"] in excluded_reports:
+        result = False
+    return result
+
+
 def get_count_stats(values: list[float]) -> CountStats:
     non_zero = [i for i in values if i != 0]
     if len(non_zero) == 0:
@@ -56,3 +79,58 @@ def get_count_stats(values: list[float]) -> CountStats:
         minimum=min(values),
         minimum_other_than_zero=min(non_zero),
     )
+
+
+def count(
+    match_report: dict,
+    match_fcn: Callable[[dict], bool],
+    excluded_reports: list | None = None,
+) -> Count:
+    """Return a count of the report data using the specified filter"""
+    team_number = TeamNumber(match_report["teamKey"])
+    total = 0
+    valid = is_valid_report(match_report, excluded_reports=excluded_reports)
+    for entry in match_report["data"]:
+        if match_fcn(entry):
+            total += entry["value"]
+    return Count(team_number, total, valid)
+
+
+def make_team_dataframe(
+    client: PeregrineClient,
+    event: str,
+    count_names: Sequence[str],
+    count_functions: Sequence[Callable[[dict], bool]],
+    excluded_reports: list | None = None,
+) -> DataFrame:
+    """Creates a DataFrame with the stats from the given event"""
+    reports = client.event_reports(event=event)
+
+    # Determine the number of game pieces each team scored in each match
+    counts = defaultdict(list)
+    for i, fcn in enumerate(count_functions):
+        for report in reports:
+            team_number, value, valid_entry = count(
+                report, fcn, excluded_reports=excluded_reports
+            )
+            if len(counts[team_number]) == i:
+                counts[team_number].append([])
+            if valid_entry:
+                counts[team_number][i].append(value)
+
+    # Find the min, max and value game pieces scored by each team
+    data = []
+    teams = []
+    for team in counts:
+        teams.append(team.number)
+        row = []
+        for i, _ in enumerate(count_names):
+            stats = get_count_stats(counts[team][i])
+            row.extend([stats.minimum_other_than_zero, stats.average, stats.maximum])
+        data.append(row)
+
+    columns = [
+        f"{i} {j}" for i in count_names for j in ["NZ Minimum", "Average", "Maximum"]
+    ]
+
+    return DataFrame(data, columns=columns, index=teams)
