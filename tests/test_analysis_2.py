@@ -7,11 +7,10 @@ from fixtures import (
 )
 from pandas import DataFrame
 
-from peregrinefrc_analysis.analysis import Count
-from peregrinefrc_analysis.analysis import make_team_dataframe, count_metric
+from peregrinefrc_analysis.analysis import Count, count_metric, make_team_dataframe
 from peregrinefrc_analysis.analysis_2023 import (
-    COUNT_NAMES,
     COUNT_FUNCTIONS,
+    COUNT_NAMES,
     count_total_game_pieces,
 )
 

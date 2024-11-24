@@ -1,6 +1,6 @@
 from collections import defaultdict
 from collections.abc import Callable
-from typing import Any, NamedTuple, Sequence
+from typing import Any, List, NamedTuple, Optional, Sequence
 
 from pandas import DataFrame
 
@@ -85,7 +85,7 @@ def get_count_stats(values: list[float]) -> CountStats:
 def count_metric(
     match_report: dict,
     match_fcn: Callable[[dict], bool],
-    excluded_reports: list | None = None,
+    excluded_reports: Optional[list] = None,
 ) -> Count:
     """Return a count of the specified metric using the report data and the
     provided counting function"""
@@ -103,7 +103,7 @@ def make_team_dataframe(
     event: str,
     count_names: Sequence[str],
     count_functions: Sequence[Callable[[dict], bool]],
-    excluded_reports: list | None = None,
+    excluded_reports: Optional[List] = None,
 ) -> DataFrame:
     """Creates a DataFrame with the stats from the given event"""
     reports = client.event_reports(event=event)

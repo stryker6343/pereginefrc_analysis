@@ -1,7 +1,11 @@
 import pytest
 
-from peregrinefrc_analysis.analysis import (Count, CountStats, TeamNumber,
-                                            get_count_stats)
+from peregrinefrc_analysis.analysis import (
+    Count,
+    CountStats,
+    TeamNumber,
+    get_count_stats,
+)
 
 
 def test_analysis_team_number_type():

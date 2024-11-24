@@ -1,6 +1,11 @@
 import pytest
-from fixtures import (INVALID_EVENT, VALID_EVENT, authenticated_client,
-                      reports_data, unauthenticated_client)
+from fixtures import (
+    INVALID_EVENT,
+    VALID_EVENT,
+    authenticated_client,
+    reports_data,
+    unauthenticated_client,
+)
 
 from peregrinefrc_analysis.errors import MissingAccessTokenError
 

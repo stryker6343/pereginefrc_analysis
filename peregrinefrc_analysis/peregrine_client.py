@@ -1,3 +1,5 @@
+from typing import List, Optional
+
 import requests
 
 from .errors import AuthenticationError, MissingAccessTokenError
@@ -12,7 +14,9 @@ class PeregrineClient:
         self._refresh_token = ""
         self._years: list[int] = []
 
-    def authenticate(self, username: str = "", password: str = "") -> None:
+    def authenticate(
+        self, username: Optional[str] = "", password: Optional[str] = ""
+    ) -> None:
         # username = username if username else ""
         # password = password if password else ""
         payload = {"username": username, "password": password}
@@ -24,7 +28,7 @@ class PeregrineClient:
         self._refresh_token = data["refreshToken"]
         self._years = self._get_years()
 
-    def _get_years(self) -> list[int]:
+    def _get_years(self) -> List[int]:
         headers = {"Authorization": "Bearer " + self._access_token}
         response = requests.get(self._base_url + "years", headers=headers)
         if response.status_code != 200:
@@ -32,10 +36,10 @@ class PeregrineClient:
         return response.json()
 
     @property
-    def years(self) -> list[int]:
+    def years(self) -> List[int]:
         return self._years
 
-    def event_reports(self, event: str) -> list[dict]:
+    def event_reports(self, event: str) -> List[dict]:
         """Return all report data for a specific event"""
         if self._access_token:
             headers = {"Authorization": "Bearer " + self._access_token}
