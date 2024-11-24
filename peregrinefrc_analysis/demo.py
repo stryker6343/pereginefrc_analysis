@@ -31,7 +31,7 @@ security_header = {"Authorization": f"Bearer {access_token}"}
 r = requests.get(BASE_URL + "years", headers=security_header)
 print(f"Years: {r.json()}")
 
-payload = {"year": 2023}
+payload = {"year": 2024}
 r = requests.get(BASE_URL + "events", headers=security_header, params=payload)
 for event in r.json():
     print(f"{event['key']:10} {event['name']}")
