@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 import requests
 
@@ -57,3 +57,10 @@ class PeregrineClient:
         if len(data) == 0:
             raise ValueError(f"Event code '{event}' returned no event reports")
         return data
+
+    def get_users(self) -> List[Dict]:
+        headers = {"Authorization": "Bearer " + self._access_token}
+        response = requests.get(self._base_url + "users", headers=headers)
+        if response.status_code != 200:
+            raise IOError(f"[Status {response.status_code}]: {response.text}")
+        return response.json()

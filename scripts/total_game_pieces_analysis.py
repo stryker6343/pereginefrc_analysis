@@ -14,4 +14,4 @@ client.authenticate(
 df = make_team_dataframe(
     client, EVENT_ID, COUNT_NAMES, COUNT_FUNCTIONS, excluded_reports=EXCLUDED_REPORTS
 )
-print(df)
+print(df.to_string())
