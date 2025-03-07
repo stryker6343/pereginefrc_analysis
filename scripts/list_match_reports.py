@@ -2,17 +2,19 @@ from os import getenv
 
 from peregrinefrc_analysis import PeregrineClient
 
-EVENT_ID = "2024orwil"
+EVENT_IDS = ["2025orsal"]
 # EXCLUDED_REPORTS = [9531, 9532]
 
 client = PeregrineClient()
 client.authenticate(
     username=getenv("PEREGRINE_USERNAME"), password=getenv("PEREGRINE_PASSWORD")
 )
-reports = [
-    (report["id"], report["matchKey"], report["reporterId"])
-    for report in client.event_reports(EVENT_ID)
-]
-reports.sort()
-for report in reports:
-    print(*report)
+
+for event_report in client.event_reports(EVENT_IDS):
+    reports = [
+        (int(report["id"]), report["eventKey"], report["matchKey"], int(report["reporterId"]))
+        for report in event_report
+    ]
+    reports.sort()
+    for report in reports:
+        print(*report)
