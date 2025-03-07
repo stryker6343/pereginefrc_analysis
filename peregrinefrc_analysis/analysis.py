@@ -1,5 +1,6 @@
 from collections import defaultdict
 from collections.abc import Callable
+import math
 from typing import Any, NamedTuple, Sequence, List
 
 from pandas import DataFrame
@@ -47,6 +48,7 @@ class CountStats(NamedTuple):
     maximum: float
     minimum: float
     minimum_other_than_zero: float
+    standard_deviation: float
 
 
 def is_valid_report(
@@ -73,12 +75,15 @@ def get_count_stats(values: list[float]) -> CountStats:
         non_zero = [
             0,
         ]
+    mean = sum(values) / len(values)
+    variance = sum(pow(val - mean, 2) for val in values) / len(values)
     return CountStats(
         quantity=len(values),
-        average=sum(values) / len(values),
+        average=mean,
         maximum=max(values),
         minimum=min(values),
         minimum_other_than_zero=min(non_zero),
+        standard_deviation=math.sqrt(variance),
     )
 
 
@@ -129,11 +134,11 @@ def make_team_dataframe(
         row = []
         for i, _ in enumerate(count_names):
             stats = get_count_stats(counts[team][i])
-            row.extend([stats.minimum_other_than_zero, stats.average, stats.maximum])
+            row.extend([stats.minimum_other_than_zero, stats.average, stats.standard_deviation, stats.maximum])
         data.append(row)
 
     columns = [
-        f"{i} {j}" for i in count_names for j in ["NZ Minimum", "Average", "Maximum"]
+        f"{i} {j}" for i in count_names for j in ["NZ Minimum", "Mean", "Std. Dev.", "Maximum"]
     ]
 
     return DataFrame(data, columns=columns, index=teams)
