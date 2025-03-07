@@ -1,3 +1,5 @@
+from typing import List
+
 import requests
 
 from .errors import AuthenticationError, MissingAccessTokenError
@@ -35,7 +37,7 @@ class PeregrineClient:
     def years(self) -> list[int]:
         return self._years
 
-    def event_reports(self, event: str) -> list[dict]:
+    def event_reports(self, events: List[str]) -> list[dict]:
         """Return all report data for a specific event"""
         if self._access_token:
             headers = {"Authorization": "Bearer " + self._access_token}
@@ -43,13 +45,14 @@ class PeregrineClient:
             raise MissingAccessTokenError(
                 "The access token is not set, call the authenticate method first"
             )
-        payload = {"event": event}
-        response = requests.get(
-            self._base_url + "reports", params=payload, headers=headers
-        )
-        if response.status_code != 200:
-            raise IOError(f"[Status {response.status_code}]: {response.text}")
-        data = response.json()
-        if len(data) == 0:
-            raise ValueError(f"Event code '{event}' returned no event reports")
-        return data
+        for event in events:
+            payload = {"event": event}
+            response = requests.get(
+                self._base_url + "reports", params=payload, headers=headers
+            )
+            if response.status_code != 200:
+                raise IOError(f"[Status {response.status_code}]: {response.text}")
+            data = response.json()
+            # if len(data) == 0:
+            #     raise ValueError(f"Event code '{event}' returned no event reports")
+            yield data

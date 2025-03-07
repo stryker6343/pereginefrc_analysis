@@ -1,6 +1,6 @@
 from collections import defaultdict
 from collections.abc import Callable
-from typing import Any, NamedTuple, Sequence
+from typing import Any, NamedTuple, Sequence, List
 
 from pandas import DataFrame
 
@@ -100,25 +100,26 @@ def count_metric(
 
 def make_team_dataframe(
     client: PeregrineClient,
-    event: str,
+    events: List[str],
     count_names: Sequence[str],
     count_functions: Sequence[Callable[[dict], bool]],
     excluded_reports: list | None = None,
 ) -> DataFrame:
     """Creates a DataFrame with the stats from the given event"""
-    reports = client.event_reports(event=event)
+    # reports = client.event_reports(events=events)
 
     # Determine the number of game pieces each team scored in each match
     counts: defaultdict[Any, list] = defaultdict(list)
     for i, fcn in enumerate(count_functions):
-        for report in reports:
-            team_number, value, valid_entry = count_metric(
-                report, fcn, excluded_reports=excluded_reports
-            )
-            if len(counts[team_number]) == i:
-                counts[team_number].append([])
-            if valid_entry:
-                counts[team_number][i].append(value)
+        for reports in client.event_reports(events=events):
+            for report in reports:
+                team_number, value, valid_entry = count_metric(
+                    report, fcn, excluded_reports=excluded_reports
+                )
+                if len(counts[team_number]) == i:
+                    counts[team_number].append([])
+                if valid_entry:
+                    counts[team_number][i].append(value)
 
     # Find the min, max and value game pieces scored by each team
     data = []
