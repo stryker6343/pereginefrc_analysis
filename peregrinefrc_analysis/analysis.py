@@ -1,10 +1,11 @@
 from collections import defaultdict
 from collections.abc import Callable
 import math
-from typing import Any, NamedTuple, Sequence, List
+from typing import Any, Dict, NamedTuple, Sequence, List
 
 from pandas import DataFrame
 
+from . import BlueAllianceClient
 from .peregrine_client import PeregrineClient
 
 
@@ -108,36 +109,59 @@ def make_team_dataframe(
     events: List[str],
     count_names: Sequence[str],
     count_functions: Sequence[Callable[[dict], bool]],
+    district_rankings: Dict[str, int] | None = None,
     excluded_reports: list | None = None,
 ) -> DataFrame:
-    """Creates a DataFrame with the stats from the given event"""
-    # reports = client.event_reports(events=events)
+    """Creates a Pandas DataFrame using Peregrine scouting data and the provided counting functions"""
+
+    # District ranking points are optional. If missing, use an empty dict
+    if district_rankings is None:
+        district_rankings = {}
 
     # Determine the number of game pieces each team scored in each match
-    counts: defaultdict[Any, list] = defaultdict(list)
+    counts: defaultdict[Any, List] = defaultdict(list)
+
+    # For each provided counting function
     for i, fcn in enumerate(count_functions):
+
+        # For each event, get all the scouting reports
         for reports in client.event_reports(events=events):
+
+            # For each scouting report
             for report in reports:
+
+                # Analyze the report using the given counting function
                 team_number, value, valid_entry = count_metric(
                     report, fcn, excluded_reports=excluded_reports
                 )
+
+                # For each counting function, add another empty list
                 if len(counts[team_number]) == i:
                     counts[team_number].append([])
+
+                # If the report has not been excluded for some reason, include the count value in the results
                 if valid_entry:
                     counts[team_number][i].append(value)
 
-    # Find the min, max and value game pieces scored by each team
+    # For each team, create a row with the count statistics of all counts
     data = []
     teams = []
     for team in counts:
         teams.append(team.number)
         row = []
+        if len(district_rankings):
+            row.append(district_rankings[team.string])
         for i, _ in enumerate(count_names):
             stats = get_count_stats(counts[team][i])
             row.extend([stats.minimum_other_than_zero, stats.average, stats.standard_deviation, stats.maximum])
         data.append(row)
 
-    columns = [
+    # Name the columns of the data frame
+    # If provided, the first column district ranking points
+    columns = ["DRP"] if len(district_rankings) else []
+
+    # Then, add all count statistics to each row
+    columns += [
         f"{i} {j}" for i in count_names for j in ["NZ Minimum", "Mean", "Std. Dev.", "Maximum"]
     ]
 
