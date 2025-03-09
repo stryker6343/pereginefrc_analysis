@@ -54,3 +54,17 @@ class PeregrineClient:
                 raise IOError(f"[Status {response.status_code}]: {response.text}")
             data = response.json()
             yield data
+
+    def scouter_info(self):
+        """Return scouter info"""
+        if self._access_token:
+            headers = {"Authorization": "Bearer " + self._access_token}
+        else:
+            raise MissingAccessTokenError(
+                "The access token is not set, call the authenticate method first"
+            )
+        response = requests.get(self._base_url + "users", headers=headers)
+        if response.status_code != 200:
+            raise IOError(f"[Status {response.status_code}]: {response.text}")
+        data = response.json()
+        return data
