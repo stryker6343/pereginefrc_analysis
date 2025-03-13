@@ -90,7 +90,7 @@ def get_count_stats(values: list[float]) -> CountStats:
 
 def count_metric(
     match_report: dict,
-    match_fcn: Callable[[dict], bool],
+    scaling_fcn: Callable[[dict], int],
     excluded_reports: list | None = None,
 ) -> Count:
     """Return a count of the specified metric using the report data and the
@@ -99,8 +99,7 @@ def count_metric(
     total = 0
     valid = is_valid_report(match_report, excluded_reports=excluded_reports)
     for entry in match_report["data"]:
-        if match_fcn(entry):
-            total += entry["value"]
+        total += scaling_fcn(entry) * entry["value"]
     return Count(team_number, total, valid)
 
 
@@ -125,7 +124,7 @@ def make_team_dataframe(
     for i, fcn in enumerate(count_functions):
 
         # For each event, get all the scouting reports
-        for reports in client.event_reports(events=events):
+        for _, reports in client.event_reports(events=events):
 
             # For each scouting report
             for report in reports:

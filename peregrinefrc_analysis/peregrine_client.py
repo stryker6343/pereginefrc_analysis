@@ -1,4 +1,4 @@
-from typing import Dict, Generator, List
+from typing import Dict, Generator, List, Tuple
 
 import requests
 
@@ -37,7 +37,7 @@ class PeregrineClient:
         """List of seasons available in Peregrine"""
         return self._years
 
-    def event_reports(self, events: List[str]) -> Generator[Dict, None, None]:
+    def event_reports(self, events: List[str]) -> Generator[Tuple[str, Dict], None, None]:
         """Return all report data for a specific event"""
         if self._access_token:
             headers = {"Authorization": "Bearer " + self._access_token}
@@ -53,7 +53,7 @@ class PeregrineClient:
             if response.status_code != 200:
                 raise IOError(f"[Status {response.status_code}]: {response.text}")
             data = response.json()
-            yield data
+            yield event, data
 
     def scouter_info(self):
         """Return scouter info"""

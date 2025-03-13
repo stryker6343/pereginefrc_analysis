@@ -1,13 +1,13 @@
-def count_total_game_pieces(entry_data: dict) -> bool:
-    return "Cubes" in entry_data["name"] or "Cones" in entry_data["name"]
+def count_total_game_pieces(entry_data: dict) -> int:
+    return 1 if "Cubes" in entry_data["name"] or "Cones" in entry_data["name"] else 0
 
 
-def count_total_cubes(entry_data: dict) -> bool:
-    return "Cubes" in entry_data["name"]
+def count_total_cubes(entry_data: dict) -> int:
+    return 1 if "Cubes" in entry_data["name"] else 0
 
 
-def count_total_cones(entry_data: dict) -> bool:
-    return "Cones" in entry_data["name"]
+def count_total_cones(entry_data: dict) -> int:
+    return 1 if "Cones" in entry_data["name"] else 0
 
 
 COUNT_FUNCTIONS = [
